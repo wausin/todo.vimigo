@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_vimigo/src/view/todo/index.dart';
 
 void main() => runApp(const MyApp());
 
@@ -8,15 +9,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Todo List Vimigo',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Todo List Vimigo'),
-        ),
-        body: const Center(
-          child: Text('Hello Vimigo'),
-        ),
-      ),
+      theme: ThemeData(scaffoldBackgroundColor: Colors.white),
+      home: Todo(),
+      routes: {
+        '/home': (BuildContext context) => Todo(),
+      },
     );
   }
 }
