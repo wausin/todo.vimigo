@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:todo_vimigo/src/model/todo_model.dart';
 
 class TodoList extends StatefulWidget {
   TodoList({Key? key}) : super(key: key);
@@ -10,20 +11,28 @@ class TodoList extends StatefulWidget {
 }
 
 class _TodoListState extends State<TodoList> {
-  List<String> item = [
-    "Clients",
-    "Designer",
-    "Developer",
-    "Director",
-    "Employee",
-    "Manager",
-    "Worker",
-    "Owner"
+  List<TodoModel> todoList = [
+    TodoModel(title: "Clients"),
+    TodoModel(title: "Designer"),
+    TodoModel(title: "Developer"),
+    TodoModel(title: "Director"),
+    TodoModel(title: "Employee"),
+    TodoModel(title: "Manager"),
   ];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    // todoList.add()
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8),
+      // https://api.flutter.dev/flutter/material/ReorderableListView-class.html
       child: ReorderableListView.builder(
         header: Card(
           child: ListTile(
@@ -35,19 +44,20 @@ class _TodoListState extends State<TodoList> {
         itemBuilder: (BuildContext context, int i) {
           return ListTile(
             key: ValueKey(i),
-            title: Text(item[i]),
+            title: Text(todoList[i].title ?? ''),
+            subtitle: Text(todoList[i].description ?? ''),
             trailing:
                 IconButton(onPressed: () {}, icon: Icon(Icons.add_box_rounded)),
           );
         },
-        itemCount: item.length,
+        itemCount: todoList.length,
         onReorder: (oldKey, newKey) {
           setState(() {
             if (newKey > oldKey) {
               newKey -= 1;
             }
-            final items = item.removeAt(oldKey);
-            item.insert(newKey, items);
+            final items = todoList.removeAt(oldKey);
+            todoList.insert(newKey, items);
           });
           // print(jsonEncode({k, v}));
         },
