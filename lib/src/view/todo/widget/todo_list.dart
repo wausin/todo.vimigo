@@ -11,6 +11,7 @@ class TodoList extends StatefulWidget {
 }
 
 class _TodoListState extends State<TodoList> {
+  // https://www.bezkoder.com/dart-list/
   List<TodoModel> todoList = [
     TodoModel(title: "Clients"),
     TodoModel(title: "Designer"),
@@ -34,6 +35,7 @@ class _TodoListState extends State<TodoList> {
       padding: const EdgeInsets.all(8),
       // https://api.flutter.dev/flutter/material/ReorderableListView-class.html
       child: ReorderableListView.builder(
+        buildDefaultDragHandles: false,
         header: Card(
           child: ListTile(
             title: Text('Add New Todos'),
@@ -41,13 +43,18 @@ class _TodoListState extends State<TodoList> {
                 IconButton(onPressed: () {}, icon: Icon(Icons.add_box_rounded)),
           ),
         ),
-        itemBuilder: (BuildContext context, int i) {
-          return ListTile(
-            key: ValueKey(i),
-            title: Text(todoList[i].title ?? ''),
-            subtitle: Text(todoList[i].description ?? ''),
-            trailing:
-                IconButton(onPressed: () {}, icon: Icon(Icons.add_box_rounded)),
+        itemBuilder: (context, i) {
+          return ReorderableDragStartListener(
+            key: ValueKey(todoList[i]),
+            index: i,
+            child: ListTile(
+              title: Text(todoList[i].title ?? ''),
+              subtitle: Text(todoList[i].description ?? ''),
+              leading:
+                  IconButton(onPressed: () {}, icon: Icon(Icons.edit_outlined)),
+              trailing: IconButton(
+                  onPressed: () {}, icon: Icon(Icons.delete_outline_outlined)),
+            ),
           );
         },
         itemCount: todoList.length,
