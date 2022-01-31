@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:todo_vimigo/src/model/todo_model.dart';
+import 'package:todo_vimigo/src/view/todo/widget/todo_add.dart';
+import 'package:todo_vimigo/src/view/todo/widget/todo_edit.dart';
 
 class TodoList extends StatefulWidget {
   TodoList({Key? key}) : super(key: key);
@@ -38,9 +40,16 @@ class _TodoListState extends State<TodoList> {
         buildDefaultDragHandles: false,
         header: Card(
           child: ListTile(
+            dense: true,
             title: Text('Add New Todos'),
-            trailing:
-                IconButton(onPressed: () {}, icon: Icon(Icons.add_box_rounded)),
+            trailing: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TodoAdd()),
+                  );
+                },
+                icon: Icon(Icons.add_box_rounded)),
           ),
         ),
         itemBuilder: (context, i) {
@@ -50,8 +59,14 @@ class _TodoListState extends State<TodoList> {
             child: ListTile(
               title: Text(todoList[i].title ?? ''),
               subtitle: Text(todoList[i].description ?? ''),
-              leading:
-                  IconButton(onPressed: () {}, icon: Icon(Icons.edit_outlined)),
+              leading: IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => TodoEdit()),
+                    );
+                  },
+                  icon: Icon(Icons.edit_outlined)),
               trailing: IconButton(
                   onPressed: () {}, icon: Icon(Icons.delete_outline_outlined)),
             ),
