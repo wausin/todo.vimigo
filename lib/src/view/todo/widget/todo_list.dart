@@ -34,7 +34,7 @@ class _TodoListState extends State<TodoList> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
       padding: const EdgeInsets.all(8),
       // https://api.flutter.dev/flutter/material/ReorderableListView-class.html
       child: ValueListenableBuilder<Box<TodoModel>>(
@@ -42,57 +42,60 @@ class _TodoListState extends State<TodoList> {
           builder: (context, todo, _) {
             final todoList = todo.values.toList().cast<TodoModel>();
             // print(todo.values);
-            return ReorderableListView.builder(
-              buildDefaultDragHandles: false,
-              header: Card(
-                child: ListTile(
-                  // dense: true,
-                  title: Text('Add New Todos'),
-                  trailing: IconButton(
-                      onPressed: () {
-                        TodoController().addTodo(TodoModel(title: "Designer"));
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => TodoAdd()),
-                        // );
-                      },
-                      icon: Icon(Icons.add_box_rounded)),
-                ),
-              ),
-              itemBuilder: (context, i) {
-                return ReorderableDragStartListener(
-                  key: ValueKey(todoList[i]),
-                  index: i,
-                  child: ListTile(
-                    title: Text(todoList[i].title ?? ''),
-                    subtitle: Text(todoList[i].description ?? ''),
-                    leading: IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => TodoEdit()),
-                          );
-                        },
-                        icon: Icon(Icons.edit_outlined)),
-                    trailing: IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.delete_outline_outlined)),
-                  ),
+            return _buildReorderableList(todoList);
+          }),
+    );
+  }
+
+  ReorderableListView _buildReorderableList(List<TodoModel> todoList) {
+    return ReorderableListView.builder(
+      buildDefaultDragHandles: false,
+      header: Card(
+        child: ListTile(
+          // dense: true,
+          title: Text('Add New Todos'),
+          trailing: IconButton(
+              onPressed: () {
+                // TodoController().addTodo(TodoModel(title: "Designer"));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TodoAdd()),
                 );
               },
-              itemCount: todoList.length,
-              onReorder: (oldKey, newKey) {
-                setState(() {
-                  if (newKey > oldKey) {
-                    newKey -= 1;
-                  }
-                  final items = todoList.removeAt(oldKey);
-                  todoList.insert(newKey, items);
-                });
-                // print(jsonEncode({k, v}));
-              },
-            );
-          }),
+              icon: Icon(Icons.add_box_rounded)),
+        ),
+      ),
+      itemBuilder: (context, i) {
+        return ReorderableDragStartListener(
+          key: ValueKey(todoList[i]),
+          index: i,
+          child: ListTile(
+            title: Text(todoList[i].title ?? ''),
+            subtitle: Text(todoList[i].description ?? ''),
+            leading: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TodoEdit()),
+                  );
+                },
+                icon: Icon(Icons.edit_outlined)),
+            trailing: IconButton(
+                onPressed: () {}, icon: Icon(Icons.delete_outline_outlined)),
+          ),
+        );
+      },
+      itemCount: todoList.length,
+      onReorder: (oldKey, newKey) {
+        setState(() {
+          if (newKey > oldKey) {
+            newKey -= 1;
+          }
+          final items = todoList.removeAt(oldKey);
+          todoList.insert(newKey, items);
+        });
+        // print(jsonEncode({k, v}));
+      },
     );
   }
 }
