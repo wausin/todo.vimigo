@@ -41,7 +41,7 @@ class _TodoListState extends State<TodoList> {
           valueListenable: TodoController.getTodo().listenable(),
           builder: (context, todo, _) {
             final todoList = todo.values.toList().cast<TodoModel>();
-            // print(todo.values);
+            // print(todoList[0].title);
             return _buildReorderableList(todoList);
           }),
     );
@@ -66,6 +66,7 @@ class _TodoListState extends State<TodoList> {
         ),
       ),
       itemBuilder: (context, i) {
+        // print(todoList[i].id);
         return ReorderableDragStartListener(
           key: ValueKey(todoList[i]),
           index: i,
@@ -87,14 +88,7 @@ class _TodoListState extends State<TodoList> {
       },
       itemCount: todoList.length,
       onReorder: (oldKey, newKey) {
-        setState(() {
-          if (newKey > oldKey) {
-            newKey -= 1;
-          }
-          final items = todoList.removeAt(oldKey);
-          todoList.insert(newKey, items);
-        });
-        // print(jsonEncode({k, v}));
+        TodoController.updateTodoKey(todoList, oldKey, newKey);
       },
     );
   }

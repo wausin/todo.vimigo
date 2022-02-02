@@ -26,16 +26,9 @@ class _TodoAddState extends State<TodoAdd> {
               // print(_formKey.currentState?.value['title']);
               var formData = _formKey.currentState?.value;
               if (_formKey.currentState!.validate()) {
-                await TodoController()
-                    .addTodo(
-                      TodoModel(
-                          title: formData!['title'],
-                          description: formData['description'] ?? '',
-                          date: formData['date'] ?? ''),
-                    )
-                    .then(
-                      (value) => Navigator.pop(context),
-                    );
+                await TodoController.addTodo(formData).then(
+                  (value) => Navigator.pop(context),
+                );
               }
             },
             icon: Icon(Icons.save),
