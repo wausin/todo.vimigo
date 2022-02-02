@@ -12,8 +12,8 @@ class TodoModel extends HiveObject {
   String? title;
   @HiveField(2)
   String? description;
-  @HiveField(3)
-  String? date;
+  @HiveField(4)
+  DateTime? date;
 
   TodoModel({this.id, required this.title, this.description, this.date});
 }

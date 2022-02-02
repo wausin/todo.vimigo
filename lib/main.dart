@@ -21,8 +21,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Todo List Vimigo',
-      // theme: ThemeData(scaffoldBackgroundColor: Colors.white),
-      home: Todo(),
+      // theme: ThemeData(
+      //     colorScheme:
+      //         ColorScheme.fromSwatch().copyWith(secondary: Colors.amber)),
+      home: const Todo(),
       routes: {
         '/home': (BuildContext context) => Todo(),
       },

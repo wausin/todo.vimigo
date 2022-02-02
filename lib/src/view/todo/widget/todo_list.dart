@@ -1,7 +1,7 @@
-import 'dart:convert';
-
+// import 'dart:convert';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+// import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_vimigo/src/controller/todo_controller.dart';
 import 'package:todo_vimigo/src/model/todo_model.dart';
@@ -9,23 +9,14 @@ import 'package:todo_vimigo/src/view/todo/widget/todo_add.dart';
 import 'package:todo_vimigo/src/view/todo/widget/todo_edit.dart';
 
 class TodoList extends StatefulWidget {
-  TodoList({Key? key}) : super(key: key);
+  const TodoList({Key? key}) : super(key: key);
 
   @override
   State<TodoList> createState() => _TodoListState();
 }
 
 class _TodoListState extends State<TodoList> {
-  // https://www.bezkoder.com/dart-list/
-  // List<TodoModel> todoList = [
-  //   TodoModel(title: "Clients"),
-  //   TodoModel(title: "Designer"),
-  //   TodoModel(title: "Developer"),
-  //   TodoModel(title: "Director"),
-  //   TodoModel(title: "Employee"),
-  //   TodoModel(title: "Manager"),
-  // ];
-
+  final DateFormat formatter = DateFormat.yMMMd().add_jms();
   @override
   void dispose() {
     Hive.box('todo_model').close();
@@ -41,8 +32,13 @@ class _TodoListState extends State<TodoList> {
           valueListenable: TodoController.getTodo().listenable(),
           builder: (context, todo, _) {
             final todoList = todo.values.toList().cast<TodoModel>();
+
+            if (todoList.isNotEmpty) {
+              return _buildReorderableList(todoList);
+            } else {
+              return const Center(child: CircularProgressIndicator.adaptive());
+            }
             // print(todoList[0].title);
-            return _buildReorderableList(todoList);
           }),
     );
   }
@@ -66,23 +62,37 @@ class _TodoListState extends State<TodoList> {
         ),
       ),
       itemBuilder: (context, i) {
+        // print(todoList[i].date?.toIso8601String());
         // print(todoList[i].id);
         return ReorderableDragStartListener(
           key: ValueKey(todoList[i]),
           index: i,
           child: ListTile(
             title: Text(todoList[i].title ?? ''),
-            subtitle: Text(todoList[i].description ?? ''),
+            subtitle: Text((todoList[i].description ?? '') +
+                '\n' +
+                (todoList[i].date != null
+                    ? formatter.format(todoList[i].date ?? DateTime.now())
+                    : '')),
             leading: IconButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => TodoEdit()),
+                    MaterialPageRoute(
+                      builder: (context) => TodoEdit(
+                        todoEdit: todoList[i],
+                      ),
+                    ),
                   );
                 },
                 icon: Icon(Icons.edit_outlined)),
+            // delete todo
             trailing: IconButton(
-                onPressed: () {}, icon: Icon(Icons.delete_outline_outlined)),
+              onPressed: () async {
+                TodoController.deleteTodo(todoList[i]);
+              },
+              icon: Icon(Icons.delete_outline_outlined),
+            ),
           ),
         );
       },

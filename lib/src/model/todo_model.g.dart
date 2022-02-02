@@ -20,7 +20,7 @@ class TodoModelAdapter extends TypeAdapter<TodoModel> {
       id: fields[0] as int?,
       title: fields[1] as String?,
       description: fields[2] as String?,
-      date: fields[3] as String?,
+      date: fields[4] as DateTime?,
     );
   }
 
@@ -34,7 +34,7 @@ class TodoModelAdapter extends TypeAdapter<TodoModel> {
       ..write(obj.title)
       ..writeByte(2)
       ..write(obj.description)
-      ..writeByte(3)
+      ..writeByte(4)
       ..write(obj.date);
   }
 

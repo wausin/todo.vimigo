@@ -9,15 +9,29 @@ class TodoController {
     // final todo = TodoModel(title: title);
     final getTodo = TodoController.getTodo();
 
+    // print(formData);
     TodoModel todo = TodoModel(
       id: getTodo.length + 1,
       title: formData['title'],
       description: formData['description'] ?? '',
-      date: formData['date'] ?? '',
+      date: formData['datepicker'],
     );
-
+    await Future.delayed(const Duration(milliseconds: 1000));
     // print(getTodo.length);
     getTodo.add(todo);
+  }
+
+  static Future editTodo(TodoModel todo, dynamic formData) async {
+    todo.title = formData['title'];
+    todo.description = formData['description'] ?? '';
+    todo.date = formData['datepicker'];
+    await Future.delayed(const Duration(milliseconds: 1000));
+    await todo.save();
+  }
+
+  static Future deleteTodo(TodoModel todo) async {
+    await Future.delayed(const Duration(milliseconds: 1000));
+    await todo.delete();
   }
 
   static Future updateTodoKey(
@@ -38,7 +52,9 @@ class TodoController {
 
 // get todo box
     final getTodo = TodoController.getTodo();
+
+    // await Future.delayed(const Duration(milliseconds: 500));
 // add new list wit new key
-    getTodo.addAll(todoAddnew);
+    await getTodo.addAll(todoAddnew);
   }
 }

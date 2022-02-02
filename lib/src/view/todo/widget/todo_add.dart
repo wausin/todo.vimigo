@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:todo_vimigo/src/controller/todo_controller.dart';
-import 'package:todo_vimigo/src/model/todo_model.dart';
 
 class TodoAdd extends StatefulWidget {
   const TodoAdd({Key? key}) : super(key: key);
@@ -13,6 +12,11 @@ class TodoAdd extends StatefulWidget {
 
 class _TodoAddState extends State<TodoAdd> {
   final _formKey = GlobalKey<FormBuilderState>();
+  bool loading = false;
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +30,27 @@ class _TodoAddState extends State<TodoAdd> {
               // print(_formKey.currentState?.value['title']);
               var formData = _formKey.currentState?.value;
               if (_formKey.currentState!.validate()) {
+                setState(() {
+                  loading = true;
+                });
                 await TodoController.addTodo(formData).then(
-                  (value) => Navigator.pop(context),
+                  (value) {
+                    setState(() {
+                      loading = false;
+                    });
+                    Navigator.pop(context);
+                  },
                 );
               }
             },
-            icon: Icon(Icons.save),
+            icon: loading
+                ? const SizedBox(
+                    height: 25,
+                    child: CircularProgressIndicator.adaptive(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.lime),
+                    ),
+                  )
+                : const Icon(Icons.save),
           ),
         ],
       ),
@@ -79,7 +98,8 @@ class _TodoAddState extends State<TodoAdd> {
                   ),
                 ),
                 FormBuilderCheckbox(
-                  name: 'add to calender',
+                  initialValue: false,
+                  name: 'addtocalender',
                   title: Text('Add to Calender'),
                 ),
               ],
