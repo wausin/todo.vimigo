@@ -15,6 +15,7 @@ class TodoController {
       title: formData['title'],
       description: formData['description'] ?? '',
       date: formData['datepicker'],
+      addtocalender: formData['addtocalender'],
     );
     await Future.delayed(const Duration(milliseconds: 1000));
     // print(getTodo.length);
@@ -25,6 +26,7 @@ class TodoController {
     todo.title = formData['title'];
     todo.description = formData['description'] ?? '';
     todo.date = formData['datepicker'];
+    todo.addtocalender = formData['addtocalender'];
     await Future.delayed(const Duration(milliseconds: 1000));
     await todo.save();
   }
@@ -34,6 +36,7 @@ class TodoController {
     await todo.delete();
   }
 
+// static Future
   static Future updateTodoKey(
       List<TodoModel> todoList, int oldKey, int newKey) async {
     if (newKey > oldKey) {

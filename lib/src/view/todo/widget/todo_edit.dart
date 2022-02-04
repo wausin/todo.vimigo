@@ -22,6 +22,7 @@ class _TodoEditState extends State<TodoEdit> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.todoEdit.addtocalender);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Todo Edit'),
@@ -109,6 +110,7 @@ class _TodoEditState extends State<TodoEdit> {
                   ),
                 ),
                 FormBuilderCheckbox(
+                  initialValue: widget.todoEdit.addtocalender,
                   name: 'addtocalender',
                   title: Text('Add to Calender'),
                 ),

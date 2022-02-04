@@ -33,11 +33,13 @@ class _TodoListState extends State<TodoList> {
           builder: (context, todo, _) {
             final todoList = todo.values.toList().cast<TodoModel>();
 
-            if (todoList.isNotEmpty) {
-              return _buildReorderableList(todoList);
-            } else {
-              return const Center(child: CircularProgressIndicator.adaptive());
-            }
+            // if (todoList.isNotEmpty) {
+            Future.delayed(const Duration(seconds: 2));
+
+            return _buildReorderableList(todoList);
+            // } else {
+            //   return const Center(child: CircularProgressIndicator.adaptive());
+            // }
             // print(todoList[0].title);
           }),
     );
