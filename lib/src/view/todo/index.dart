@@ -9,6 +9,7 @@ class Todo extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Todo List Vimigo'),
+        automaticallyImplyLeading: false,
       ),
       body: SafeArea(
         child: TodoList(),

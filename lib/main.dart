@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       //         ColorScheme.fromSwatch().copyWith(secondary: Colors.amber)),
       home: const Todo(),
       routes: {
-        '/home': (BuildContext context) => Todo(),
+        '/home': (BuildContext context) => const Todo(),
       },
     );
   }

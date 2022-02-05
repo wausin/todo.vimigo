@@ -5,7 +5,7 @@ import 'package:todo_vimigo/src/model/todo_model.dart';
 class TodoController {
   static Box<TodoModel> getTodo() => Hive.box<TodoModel>('todo_model');
 
-  static Future addTodo(dynamic formData) async {
+  static Future addTodo(dynamic formData, {bool addTocalender = false}) async {
     // final todo = TodoModel(title: title);
     final getTodo = TodoController.getTodo();
 
@@ -15,7 +15,7 @@ class TodoController {
       title: formData['title'],
       description: formData['description'] ?? '',
       date: formData['datepicker'],
-      addtocalender: formData['addtocalender'],
+      addtocalender: addTocalender,
     );
     await Future.delayed(const Duration(milliseconds: 1000));
     // print(getTodo.length);

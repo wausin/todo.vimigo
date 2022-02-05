@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_vimigo/src/controller/todo_controller.dart';
 import 'package:todo_vimigo/src/model/todo_model.dart';
 import 'package:todo_vimigo/src/view/todo/widget/todo_add.dart';
+import 'package:todo_vimigo/src/view/todo/widget/todo_add_v2.dart';
 import 'package:todo_vimigo/src/view/todo/widget/todo_edit.dart';
 
 class TodoList extends StatefulWidget {
@@ -29,19 +30,16 @@ class _TodoListState extends State<TodoList> {
       padding: const EdgeInsets.all(8),
       // https://api.flutter.dev/flutter/material/ReorderableListView-class.html
       child: ValueListenableBuilder<Box<TodoModel>>(
-          valueListenable: TodoController.getTodo().listenable(),
-          builder: (context, todo, _) {
-            final todoList = todo.values.toList().cast<TodoModel>();
+        valueListenable: TodoController.getTodo().listenable(),
+        builder: (context, todo, _) {
+          final todoList = todo.values.toList().cast<TodoModel>();
 
-            // if (todoList.isNotEmpty) {
-            Future.delayed(const Duration(seconds: 2));
+          // if (todoList.isNotEmpty) {
+          Future.delayed(const Duration(seconds: 2));
 
-            return _buildReorderableList(todoList);
-            // } else {
-            //   return const Center(child: CircularProgressIndicator.adaptive());
-            // }
-            // print(todoList[0].title);
-          }),
+          return _buildReorderableList(todoList.reversed.toList());
+        },
+      ),
     );
   }
 
@@ -57,7 +55,10 @@ class _TodoListState extends State<TodoList> {
                 // TodoController().addTodo(TodoModel(title: "Designer"));
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => TodoAdd()),
+                  MaterialPageRoute(
+                    // builder: (context) => TodoAdd(),
+                    builder: (context) => TodoAddV2(),
+                  ),
                 );
               },
               icon: Icon(Icons.add_box_rounded)),
@@ -66,34 +67,118 @@ class _TodoListState extends State<TodoList> {
       itemBuilder: (context, i) {
         // print(todoList[i].date?.toIso8601String());
         // print(todoList[i].id);
-        return ReorderableDragStartListener(
+        // return Card(
+        //   key: ValueKey(todoList[i]),
+        //   child: ListTile(
+        //     // dense: true,
+        //     title: Text(todoList[i].title ?? ''),
+        //     subtitle: Text((todoList[i].description ?? '') +
+        //         '\n' +
+        //         (todoList[i].date != null
+        //             ? formatter.format(todoList[i].date ?? DateTime.now())
+        //             : '')),
+        //     leading: ReorderableDragStartListener(
+        //       // key: ValueKey(todoList[i]),
+        //       index: i,
+        //       child: const Icon(Icons.reorder),
+        //     ),
+        //     // delete todo
+        //     trailing: ButtonBar(
+        //       children: [
+        //         IconButton(
+        //             onPressed: () {
+        //               Navigator.push(
+        //                 context,
+        //                 MaterialPageRoute(
+        //                   builder: (context) => TodoEdit(
+        //                     todoEdit: todoList[i],
+        //                   ),
+        //                 ),
+        //               );
+        //             },
+        //             icon: Icon(Icons.edit_outlined)),
+        //         IconButton(
+        //           onPressed: () async {
+        //             TodoController.deleteTodo(todoList[i]);
+        //           },
+        //           icon: Icon(Icons.delete_outline_outlined),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // );
+        return ReorderableDelayedDragStartListener(
           key: ValueKey(todoList[i]),
           index: i,
-          child: ListTile(
-            title: Text(todoList[i].title ?? ''),
-            subtitle: Text((todoList[i].description ?? '') +
-                '\n' +
-                (todoList[i].date != null
-                    ? formatter.format(todoList[i].date ?? DateTime.now())
-                    : '')),
-            leading: IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TodoEdit(
-                        todoEdit: todoList[i],
+          child: Card(
+            color: Colors.black.withOpacity(0.6),
+            child: ListTile(
+              // dense: true,
+              title: Text(
+                todoList[i].title ?? '',
+                style: const TextStyle(color: Colors.white),
+              ),
+              subtitle: Text(
+                (todoList[i].description ?? '') +
+                    '\n' +
+                    (todoList[i].date != null
+                        ? formatter.format(todoList[i].date ?? DateTime.now())
+                        : ''),
+                style: const TextStyle(color: Colors.white),
+              ),
+              leading: IconButton(
+                alignment: Alignment.centerLeft,
+                iconSize: 18,
+                padding: const EdgeInsets.all(2),
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.reorder_sharp,
+                  color: Colors.white,
+                ),
+              ),
+              // delete todo
+              trailing: SizedBox(
+                width: 100,
+                // height: 100,
+                child: Row(
+                  // buttonMinWidth: 100,
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      alignment: Alignment.centerRight,
+                      iconSize: 18,
+                      padding: const EdgeInsets.all(2),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TodoEdit(
+                              todoEdit: todoList[i],
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.edit_outlined,
+                        color: Colors.white,
                       ),
                     ),
-                  );
-                },
-                icon: Icon(Icons.edit_outlined)),
-            // delete todo
-            trailing: IconButton(
-              onPressed: () async {
-                TodoController.deleteTodo(todoList[i]);
-              },
-              icon: Icon(Icons.delete_outline_outlined),
+                    IconButton(
+                      alignment: Alignment.centerRight,
+                      iconSize: 18,
+                      padding: const EdgeInsets.all(2),
+                      onPressed: () async {
+                        TodoController.deleteTodo(todoList[i]);
+                      },
+                      icon: const Icon(
+                        Icons.delete_outline_outlined,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         );
