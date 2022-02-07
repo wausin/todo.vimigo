@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:loader_overlay/src/overlay_controller_widget_extension.dart';
 import 'package:todo_vimigo/src/controller/todo_controller.dart';
 import 'package:todo_vimigo/src/model/todo_model.dart';
 
@@ -27,35 +31,7 @@ class _TodoEditState extends State<TodoEdit> {
       appBar: AppBar(
         title: const Text('Todo Edit'),
         actions: [
-          IconButton(
-            onPressed: () async {
-              _formKey.currentState?.save();
-              // print(_formKey.currentState?.value['title']);
-              var formData = _formKey.currentState?.value;
-              setState(() {
-                loading = true;
-              });
-              if (_formKey.currentState!.validate()) {
-                await TodoController.editTodo(widget.todoEdit, formData).then(
-                  (value) {
-                    setState(() {
-                      loading = false;
-                    });
-                    Navigator.pop(context);
-                  },
-                );
-              }
-            },
-            icon: loading
-                ? const SizedBox(
-                    height: 25,
-                    child: CircularProgressIndicator.adaptive(
-                      // backgroundColor: Colors.white,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.lime),
-                    ),
-                  )
-                : const Icon(Icons.save),
-          ),
+          _saveButton(context),
         ],
       ),
       body: SafeArea(
@@ -119,6 +95,72 @@ class _TodoEditState extends State<TodoEdit> {
           ),
         ),
       ),
+    );
+  }
+
+  IconButton _saveButton(BuildContext context) {
+    return IconButton(
+      onPressed: () async {
+        _formKey.currentState?.save();
+        // print(_formKey.currentState?.value['title']);
+        var formData = _formKey.currentState?.value;
+
+        if (_formKey.currentState!.validate()) {
+          context.loaderOverlay.show();
+          setState(() {
+            loading = context.loaderOverlay.visible;
+          });
+
+          await TodoController.editTodo(widget.todoEdit, formData).then(
+            (value) async {
+              if (loading) {
+                context.loaderOverlay.hide();
+              }
+              setState(() {
+                loading = context.loaderOverlay.visible;
+              });
+
+              bool checkBox =
+                  _formKey.currentState?.fields['addtocalender']?.value;
+              if (checkBox) {
+                if (Platform.isAndroid) {
+                  await Add2Calendar.addEvent2Cal(
+                    Event(
+                      title: _formKey.currentState?.fields['title']?.value,
+                      description:
+                          _formKey.currentState?.fields['description']?.value,
+                      location: 'Vimigo',
+                      startDate:
+                          _formKey.currentState?.fields['datepicker']?.value,
+                      endDate: _formKey
+                          .currentState?.fields['datepicker']?.value
+                          .add(const Duration(minutes: 30)),
+                      allDay: false,
+                      iosParams: const IOSParams(
+                        reminder: Duration(minutes: 40),
+                      ),
+                      androidParams: const AndroidParams(
+                        emailInvites: ["test@example.com"],
+                      ),
+                    ),
+                  ).then((value) => Navigator.pop(context));
+                } else {
+                  Navigator.pop(context);
+                }
+              } else {
+                if (loading) {
+                  context.loaderOverlay.hide();
+                }
+                setState(() {
+                  loading = context.loaderOverlay.visible;
+                });
+                Navigator.pop(context);
+              }
+            },
+          );
+        }
+      },
+      icon: const Icon(Icons.save),
     );
   }
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -29,53 +31,7 @@ class _TodoAddV2State extends State<TodoAddV2> {
         appBar: AppBar(
           title: const Text('Todo Add'),
           actions: [
-            IconButton(
-              onPressed: () async {
-                _formKey.currentState?.save();
-                // print(_formKey.currentState?.value['title']);
-                var formData = _formKey.currentState?.value;
-                if (_formKey.currentState!.validate()) {
-                  context.loaderOverlay.show();
-                  setState(() {
-                    loading = context.loaderOverlay.visible;
-                  });
-                  await TodoController.addTodo(formData, addTocalender: true)
-                      .then(
-                    (value) async {
-                      if (loading) {
-                        context.loaderOverlay.hide();
-                      }
-                      setState(() {
-                        loading = context.loaderOverlay.visible;
-                      });
-                      // Navigator.pushNamedAndRemoveUntil(
-                      //     context, '/home', (route) => false);
-                      await Add2Calendar.addEvent2Cal(
-                        Event(
-                          title: _formKey.currentState?.fields['title']?.value,
-                          description: _formKey
-                              .currentState?.fields['description']?.value,
-                          location: 'Vimigo',
-                          startDate: _formKey
-                              .currentState?.fields['datepicker']?.value,
-                          endDate: _formKey
-                              .currentState?.fields['datepicker']?.value
-                              .add(const Duration(minutes: 30)),
-                          allDay: false,
-                          iosParams: const IOSParams(
-                            reminder: Duration(minutes: 40),
-                          ),
-                          androidParams: const AndroidParams(
-                            emailInvites: ["test@example.com"],
-                          ),
-                        ),
-                      ).then((value) => Navigator.pop(context));
-                    },
-                  );
-                }
-              },
-              icon: const Icon(Icons.save),
-            ),
+            _saveButton(context),
           ],
         ),
         body: SafeArea(
@@ -116,16 +72,22 @@ class _TodoAddV2State extends State<TodoAddV2> {
                     name: 'datepicker',
                     firstDate: DateTime.now(),
                     lastDate: DateTime(2032),
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Date',
-                      border: const OutlineInputBorder(),
+                      border: OutlineInputBorder(),
                     ),
+                    validator: FormBuilderValidators.compose([
+                      FormBuilderValidators.required(context,
+                          errorText: 'required'),
+                      // FormBuilderValidators.maxLength(context, 3,
+                      //     errorText: 'not more than 3 letters'),
+                    ]),
                   ),
                   FormBuilderCheckbox(
                     // onChanged: (value) =>
                     initialValue: false,
                     name: 'addtocalender',
-                    title: Text('Add to Calender'),
+                    title: const Text('Add to Calender'),
                   ),
                 ],
               ),
@@ -136,9 +98,73 @@ class _TodoAddV2State extends State<TodoAddV2> {
     );
   }
 
+  IconButton _saveButton(BuildContext context) {
+    return IconButton(
+      onPressed: () async {
+        _formKey.currentState?.save();
+        // print(_formKey.currentState?.value['title']);
+        var formData = _formKey.currentState?.value;
+        if (_formKey.currentState!.validate()) {
+          context.loaderOverlay.show();
+          setState(() {
+            loading = context.loaderOverlay.visible;
+          });
+          await TodoController.addTodo(formData, addTocalender: true).then(
+            (value) async {
+              if (loading) {
+                context.loaderOverlay.hide();
+              }
+              setState(() {
+                loading = context.loaderOverlay.visible;
+              });
+              bool checkBox =
+                  _formKey.currentState?.fields['addtocalender']?.value;
+
+              if (checkBox) {
+                if (Platform.isAndroid) {
+                  await Add2Calendar.addEvent2Cal(
+                    Event(
+                      title: _formKey.currentState?.fields['title']?.value,
+                      description:
+                          _formKey.currentState?.fields['description']?.value,
+                      location: 'Vimigo',
+                      startDate:
+                          _formKey.currentState?.fields['datepicker']?.value,
+                      endDate: _formKey
+                          .currentState?.fields['datepicker']?.value
+                          .add(const Duration(minutes: 30)),
+                      allDay: false,
+                      iosParams: const IOSParams(
+                        reminder: Duration(minutes: 40),
+                      ),
+                      androidParams: const AndroidParams(
+                        emailInvites: ["test@example.com"],
+                      ),
+                    ),
+                  ).then((value) => Navigator.pop(context));
+                } else {
+                  Navigator.pop(context);
+                }
+              } else {
+                if (loading) {
+                  context.loaderOverlay.hide();
+                }
+                setState(() {
+                  loading = context.loaderOverlay.visible;
+                });
+                Navigator.pop(context);
+              }
+            },
+          );
+        }
+      },
+      icon: const Icon(Icons.save),
+    );
+  }
+
   AlertDialog _buildAlertDialog(formData) {
     return AlertDialog(
-      title: Text('Add to event Calender ?'),
+      title: const Text('Add to event Calender ?'),
       actions: [
         ElevatedButton.icon(
           onPressed: () async {

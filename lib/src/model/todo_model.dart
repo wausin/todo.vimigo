@@ -16,7 +16,6 @@ class TodoModel extends HiveObject {
   DateTime? date;
   @HiveField(5)
   bool? addtocalender;
-
   TodoModel(
       {this.id,
       required this.title,

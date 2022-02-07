@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hive/hive.dart';
 import 'package:todo_vimigo/src/model/todo_model.dart';
 // import 'package:todo_vimigo/src/view/todo/widget/todo_list.dart';
@@ -19,7 +21,22 @@ class TodoController {
     );
     await Future.delayed(const Duration(milliseconds: 1000));
     // print(getTodo.length);
-    getTodo.add(todo);
+    // add new todo
+    await getTodo.add(todo);
+
+//     // get latest todo
+//     List<TodoModel> newList = getTodo.values.toList().cast<TodoModel>();
+
+// // make new list for reverse list
+//     List<TodoModel> revList = newList.reversed.toList();
+//     // delete old list
+//     for (int i = 0; i < newList.length; i++) {
+//       var e = newList[i];
+//       await e.delete();
+//     }
+
+//     await getTodo.addAll(revList);
+    // print(jsonEncode(revList.reversed));
   }
 
   static Future editTodo(TodoModel todo, dynamic formData) async {
@@ -39,25 +56,37 @@ class TodoController {
 // static Future
   static Future updateTodoKey(
       List<TodoModel> todoList, int oldKey, int newKey) async {
+    // List<TodoModel> todoListrev = todoList.reversed.toList();
+    // print([newKey, oldKey]);
     if (newKey > oldKey) {
       newKey -= 1;
     }
+
+    print([newKey, oldKey]);
     final items = todoList.removeAt(oldKey);
+    // todoList.elementAt(oldKey).id = newKey;
+    // todoList.elementAt(newKey).id = oldKey;
     todoList.insert(newKey, items);
 
-// ready for new list
+// // ready for new list
     var todoAddnew = todoList;
-// delete old list
+// // delete old list
     for (int i = 0; i < todoList.length; i++) {
       var e = todoList[i];
+      print(e.key);
       e.delete();
+
+      // if (todoAddnew[i].id == oldKey) {
+      //   todoAddnew[i].id = newKey;
+      //   print(todoAddnew[i].id);
+      // }
     }
 
-// get todo box
+// // get todo box
     final getTodo = TodoController.getTodo();
 
-    // await Future.delayed(const Duration(milliseconds: 500));
-// add new list wit new key
+//     // await Future.delayed(const Duration(milliseconds: 500));
+// // add new list wit new key
     await getTodo.addAll(todoAddnew);
   }
 }
